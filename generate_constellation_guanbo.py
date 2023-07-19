@@ -176,7 +176,7 @@ plt.title('CSI with very large value at unused subcarrier due to division')
 
 plt.close('all')
 symbol_start =0
-symbol_num = 10
+symbol_num = 6
 sig_1 = np.zeros((symbol_num,64),dtype=complex) #only equalization
 sig_cfo_1 =np.zeros((symbol_num,64),dtype=complex) #equalization + coarse CFO correction
 sig_cfo2_1 = np.zeros((symbol_num,64),dtype=complex)#equalization + coarse + fine CFO correction
@@ -184,6 +184,10 @@ sig_1f = np.zeros((symbol_num,64),dtype = complex)
 sig_cfo_1f = np.zeros((symbol_num,64),dtype =complex)
 sig_cfo2_1f = np.zeros((symbol_num,64),dtype =complex) 
 all_four_pilot = np.zeros((symbol_num,4),dtype = complex)
+rfo_1 = np.zeros((symbol_num,1),dtype=complex)
+rfo_cfo= np.zeros((symbol_num,1), dtype = complex)
+rfo_cfo2 = np.zeros((symbol_num,1), dtype = complex)
+
 
 polarity_iter = itertools.cycle(polarity)
 
@@ -200,9 +204,9 @@ for i in range(symbol_start, symbol_start +symbol_num):
     sig_1f[indx,:] = np.fft.fft(sig_1[indx,:])
     sig_cfo_1f[indx,:] = np.fft.fft(sig_cfo_1[indx,:])
     sig_cfo2_1f[indx,:] = np.fft.fft(sig_cfo2_1[indx,:])
-    rfo_1 = np.mean(np.angle(sig_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H[PILOT_SUBCARRIES]))
-    rfo_cfo= np.mean(np.angle(sig_cfo_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H_cfo[PILOT_SUBCARRIES]))
-    rfo_cfo2 = np.mean(np.angle(sig_cfo2_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H_cfo[PILOT_SUBCARRIES]))
+    rfo_1[indx,0] = np.mean(np.angle(sig_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H[PILOT_SUBCARRIES]))
+    rfo_cfo[indx,0]= np.mean(np.angle(sig_cfo_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H_cfo[PILOT_SUBCARRIES]))
+    rfo_cfo2[indx,0] = np.mean(np.angle(sig_cfo2_1f[indx,PILOT_SUBCARRIES].conjugate())+np.angle(four_pilot)+np.angle(H_cfo[PILOT_SUBCARRIES]))
     indx = indx+1
 
 
@@ -221,7 +225,7 @@ sig_cfo2_rfo_1f_c[:,PILOT_SUBCARRIES] = all_four_pilot #
 
 # %%
 plt.close('all')
-sym_idx =np.arange(0,10,1)
+sym_idx =np.arange(symbol_start,symbol_start+symbol_num,1)
 plt.figure(71)
 plt.plot(sig_cfo_1f_c[sym_idx,:].real.T, sig_cfo_1f_c[sym_idx,:].imag.T,'*')
 plt.xlabel('real part')
