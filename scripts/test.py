@@ -44,7 +44,7 @@ def test():
     begin, expected_signal, cons, expected_demod_out,\
         expected_deinterleave_out,\
         expected_conv_out, expected_descramble_out, expected_byte_out, pkt =\
-        decode.Decoder(args.sample, skip=0).decode_next()
+        decode.(args.sample, skip=0).decode_next()
 
     num_sample = int((expected_signal.length*8.0/expected_signal.rate +
                       (40 if expected_signal.ht else 20))*20)
