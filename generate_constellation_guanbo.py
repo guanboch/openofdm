@@ -68,8 +68,9 @@ signal_cfo2[sig_offset:] = signal_cfo[sig_offset:]*np.exp(-1j*cfo_cor_indx2*beta
 # %% generate subcarrier mask to indicate unused subcarriers 
 sub_mask = np.ones(64)
 sub_mask[0:6]=0
-sub_mask[64-6:64]=0
+sub_mask[64-5:64]=0
 sub_mask[32]=0
+sub_mask_shift=np.fft.ifftshift(sub_mask)
 
 
 # %% correlation of LTF field to detect packet start time
@@ -100,6 +101,7 @@ lts2_cfo2 = signal_cfo2[lts_offset+64:lts_offset+128]
 lts1_cfo2_f = np.fft.fft(lts1_cfo2)
 lts2_cfo2_f = np.fft.fft(lts2_cfo2)
 
+plt.close('all')
 plt.figure(31)
 plt.plot(np.abs(np.fft.fft(lts1)))
 plt.xlabel('subcarrier')
@@ -110,8 +112,14 @@ plt.xlabel('subcarrier')
 plt.title('spectrum of second LTS')
 
 plt.figure(34)
-plt.plot(np.abs(lts_f))
+plt.plot(np.abs(lts_f), '-*')
 plt.xlabel('subcarrier. first half 0 to 10MHz, second half, -10 to 0MHz ')
+plt.title('spectrum of template of LTS. real and even. Unused subcarrier is 0')
+
+
+plt.figure(38)
+plt.plot(np.abs(np.fft.ifftshift(lts_f)), '-*')
+plt.xlabel('subcarrier. ')
 plt.title('spectrum of template of LTS. real and even. Unused subcarrier is 0')
 
 plt.figure(35)
@@ -127,18 +135,38 @@ plt.title('LTS sequence, real and even')
 H = 0.5*(lts1_f+lts2_f)*lts_f
 H_cfo = 0.5*(lts1_cfo_f+lts2_cfo_f)*lts_f
 H_cfo2 = 0.5*(lts1_cfo2_f+lts2_cfo2_f)*lts_f
-# H_cfo = H_cfo2!!! long training field only has coarse CFO correction
-
+# H_cfo = H_cfo2 !!! long training field only has coarse CFO correction
+plt.close('all')
 plt.figure(40)
-plt.plot(np.abs(H))
+plt.plot(np.fft.fftshift(np.abs(H)))
 plt.xlabel('subcarrier')
 plt.ylabel('amplitude')
-plt.title('CSI with close to 0 value at unused subcarrier')
+plt.title('CSI without any cfo correction')
+
+plt.figure(41)
+plt.plot(np.fft.fftshift(np.abs(H_cfo)))
+plt.xlabel('subcarrier')
+plt.ylabel('amplitude')
+plt.title('CSI coarse cfo correction')
+
+
+plt.figure(43)
+plt.plot(np.fft.fftshift(np.angle(H)*sub_mask_shift))
+plt.xlabel('subcarrier')
+plt.ylabel('phase')
+plt.title('CSI phase')
+
+plt.figure(44)
+plt.plot(np.fft.fftshift(np.angle(H_cfo)*sub_mask_shift))
+plt.xlabel('subcarrier')
+plt.ylabel('phase')
+plt.title('CSI phase with coarse cfo correction')
+
 #for some chipset, using division to calculate CSI. we get very large value at unused subcarrier location
 H_div = 0.5*(lts1_f+lts2_f)/lts_f
 H_cfo_div = 0.5*(lts1_cfo_f+lts2_cfo_f)*lts_f
 
-plt.figure(41)
+plt.figure(49)
 plt.plot(np.abs(H_div))
 plt.xlabel('subcarrier')
 plt.ylabel('amplitude')
