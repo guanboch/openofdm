@@ -118,7 +118,7 @@ plt.title('spectrum of template of LTS. real and even. Unused subcarrier is 0')
 
 
 plt.figure(38)
-plt.plot(np.abs(np.fft.ifftshift(lts_f)), '-*')
+plt.plot(np.abs(np.fft.fftshift(lts_f)), '-*')
 plt.xlabel('subcarrier. ')
 plt.title('spectrum of template of LTS. real and even. Unused subcarrier is 0')
 
